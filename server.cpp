@@ -110,7 +110,6 @@ static bool isFaustFile(const fs::path& f)
 {
     fs::path x = f.extension();
     bool     a = (x == ".dsp") || (x == ".lib");
-    // std::cerr << "isFaustFile(" << f << ") = " << a << std::endl;
     return a;
 }
 
@@ -140,7 +139,6 @@ static void create_file_tree(fs::path srcdir, fs::path sha1path, fs::path makefi
     fs::directory_iterator end_iter;
     for (fs::directory_iterator os_iter(makefile_directory); os_iter != end_iter; ++os_iter) {
         if (fs::is_directory(os_iter->path())) {
-            // std::cerr << "scanning OS directory " << os_iter->path() << std::endl;
             string OSname = os_iter->path().filename().string();
             // create_directory(sha1path/OSname);
             for (fs::directory_iterator makefile_iter(os_iter->path()); makefile_iter != end_iter; ++makefile_iter) {
@@ -163,8 +161,6 @@ static void create_file_tree(fs::path srcdir, fs::path sha1path, fs::path makefi
     // copy makefile.none to handle non-architecture-specific targets like mdoc.zip, etc
     fs::copy_file(fs::path(makefile_directory) / "Makefile.none", sha1path / "Makefile");
     copyFaustFiles(srcdir, sha1path);
-
-    // std::cerr << "EXIT create_file_tree()" << std::endl;
 }
 /*
  * Validates that a Faust file or archive is sane and returns 0 for success
@@ -276,9 +272,6 @@ static int validate_faust(connection_info_struct* con_info)
 
     int exitstatus = pclose(pipe);
 
-    // if (gVerbosity >= 1) std::cerr << "fs::remove_all(" << tmpdir << ")" << std::endl;
-    // fs::remove_all(tmpdir);
-
     if (exitstatus) {
         if (gVerbosity >= 1)
             std::cerr << "EXIT validate_faust with failure : completebutcorrupt_head  : " << old_full_filename
@@ -342,13 +335,6 @@ static int validate_faust(connection_info_struct* con_info)
     return exitstatus;
 }
 
-/* TO REMOVE ?
-static bool isMakefile(const fs::path& f)
-{
-    return f.stem() == "Makefile";
-}
-*/
-
 /*
  * Makes an initial directory whose name is the SHA-1 key passed in for
  * a Faust file or archive, returning 0 for success or 1 for failure.
@@ -373,23 +359,6 @@ static fs::path make(const fs::path& dir, const fs::path& target)
 
     return p;
 }
-
-/*
- * returns the number of elements in a path
- * an implementation using directory_iterators was leading to an abort trap
- * should investigate further...
- */
-
-/* TO REMOVE ?
-static int pathsize(fs::path path, int n = 0)
-{
-    if (path.string()=="/" || path.string()=="." || path.string()=="") {
-        return n;
-    }
-
-    return pathsize(path.parent_path(), n+1);
-}
-*/
 
 /*
  * Callback that puts GET parameters in a TArgs. The TArgs typedef is defined
