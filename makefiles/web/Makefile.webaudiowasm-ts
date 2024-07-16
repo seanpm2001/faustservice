@@ -9,7 +9,7 @@ out ?= $(basename $(faustfile))
 
 binary.zip : $(faustfile)
 
-	faust2wasm-ts $(faustfile) $(out) -standalone  
+	faust2wasm-ts $(faustfile) $(out) -pwa  
 	zip -r binary.zip $(out)
 
 src.wasm : $(faustfile)

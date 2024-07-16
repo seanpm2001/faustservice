@@ -8,7 +8,7 @@ faustfile ?= $(wildcard *.dsp)
 out ?= $(basename $(faustfile))
 
 binary.zip : $(faustfile)
-	faust2wasm-ts $(faustfile) $(out) -poly -standalone  
+	faust2wasm-ts $(faustfile) $(out) -poly -pwa  
 	zip -r binary.zip $(out)
 
 src.wasm : $(faustfile)
