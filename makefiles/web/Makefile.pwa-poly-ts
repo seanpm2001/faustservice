@@ -1,0 +1,13 @@
+################################################################################
+# 
+#		FaustWeb Makefile for PWA applications using TS architecture
+# 
+################################################################################
+
+faustfile ?= $(wildcard *.dsp)
+
+pwa : $(faustfile)
+	faust2wasm-ts $(faustfile) pwa -poly -pwa  
+
+src.wasm : $(faustfile)
+	faust -lang wasm -i $(faustfile) -o src.wasm
