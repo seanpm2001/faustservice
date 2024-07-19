@@ -489,11 +489,6 @@ static bool isValidTarget(const fs::path& target, const char*& mimetype)
     } else if (target == "installer.sh") {
         mimetype = "application/x-shellscript";
         return true;
-        
-    // The directory for PWA
-    } else if (target == "pwa") {
-        mimetype = "inode/directory";
-        return true;
 
     } else {
         return false;
@@ -642,12 +637,11 @@ int FaustServer::dispatchGETConnections(struct MHD_Connection* connection, const
                 // simulate crash -- to be removed in production
                 exit(-1);
 
-            } else if (matchURL(url, "/crash2"))) {
+            } else if (matchURL(url, "/crash2")) {
                 // simulate crash -- to be removed in production
                 int* p = 0;
                 *p     = 5 / (*p);
                 return page_not_found(connection, "/crash2", 7, "image/x-icon");
-            }
         */
     } else if (matchURL(url, "/*/*/*/installer.sh")) {
         return makeAndSendResourceFile(connection, url);
@@ -656,9 +650,6 @@ int FaustServer::dispatchGETConnections(struct MHD_Connection* connection, const
         return makeAndSendResourceFile(connection, url);
 
     } else if (matchURL(url, "/*/*/*/precompile")) {
-        return makeAndSendResourceFile(connection, url);
-        
-    } else if (matchURL(url, "/*/*/*/pwa")) {
         return makeAndSendResourceFile(connection, url);
 
     } else if (matchURL(url, "/*/*/*/binary.apk")) {
@@ -753,7 +744,7 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
                          "text/html");
     }
 
-    // We can call make
+    // we can call make
     fs::path filename = make(fulldir, target);
 
     if (!fs::is_regular_file(filename)) {
