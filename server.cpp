@@ -755,11 +755,8 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
 
     // We can call make
     fs::path filename = make(fulldir, target);
-    
-    if (fs::is_directory(filename)) {
-        // For PWA
-        return send_file(connection, filename, mimetype);
-    } else if (!fs::is_regular_file(filename)) {
+
+    if (!fs::is_regular_file(filename)) {
         std::cerr << "Error : Make Failed "
                   << " in raw_url " << raw_url << std::endl;
         return send_page(connection, cannotcompile.c_str(), cannotcompile.size(), MHD_HTTP_BAD_REQUEST, "text/html");
