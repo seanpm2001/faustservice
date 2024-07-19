@@ -744,7 +744,7 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
                          "text/html");
     }
 
-    // we can call make
+    // We can call make
     fs::path filename = make(fulldir, target);
 
     if (!fs::is_regular_file(filename)) {
