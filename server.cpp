@@ -28,10 +28,10 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <regex>
 
 // libmicrohttpd
 #include <microhttpd.h>
@@ -386,7 +386,7 @@ int FaustServer::send_page(struct MHD_Connection* connection, const char* page, 
         return MHD_NO;
 
     } else {
-        MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, type ? type : "text/plain"); 
+        MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, type ? type : "text/plain");
         if (location) {
             MHD_add_response_header(response, MHD_HTTP_HEADER_LOCATION, location);
             MHD_add_response_header(response, MHD_HTTP_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS, MHD_HTTP_HEADER_LOCATION);
@@ -466,6 +466,7 @@ unsigned int FaustServer::nr_of_uploading_clients = 0;
 // Define here the various targets accepted by faustweb makefiles
 static bool isValidTarget(const fs::path& target, const char*& mimetype)
 {
+    return true;  // TODO
     if (target == "binary.zip") {
         mimetype = "application/zip";
         return true;
@@ -603,7 +604,7 @@ int FaustServer::dispatchGETConnections(struct MHD_Connection* connection, const
     // MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, get_params, &args);
     if (gVerbosity >= 2) std::cerr << "ANSWER GET CONNECTION " << url << std::endl;
 
-    if (matchExtension(url, ".php") || matchExtension(url, ".js")) {
+    if (matchExtension(url, ".php") /*|| matchExtension(url, ".js")*/) {
         return page_not_found(connection, "/favicon.ico", 12, "image/x-icon");
 
     } else if (matchURL(url, "/")) {
@@ -658,6 +659,9 @@ int FaustServer::dispatchGETConnections(struct MHD_Connection* connection, const
     } else if (matchURL(url, "/*/diagram/*") && matchExtension(url, ".svg")) {
         return makeAndSendResourceFile(connection, url);
 
+    } else if (matchBeginURL(url, "/*/pwa")) {
+        return makeAndSendResourceFile(connection, url);
+
     } else if (matchURL(url, "/favicon.ico")) {
         return page_not_found(connection, "/favicon.ico", 12, "image/x-icon");
 
@@ -681,7 +685,8 @@ int FaustServer::dispatchGETConnections(struct MHD_Connection* connection, const
 // just anything
 //
 static const std::regex makefile_target_regex(R"(^#FaustBinaryTarget:\s*([^\s]+)\s*$)");
-std::string FaustServer::getMakefileArtifactName(const fs::path& make_file_path) {
+std::string             FaustServer::getMakefileArtifactName(const fs::path& make_file_path)
+{
     fs::ifstream file(make_file_path);
     if (file.is_open()) {
         std::string first_line;
@@ -723,6 +728,26 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
             make(fullfile.parent_path().parent_path(), fs::path("diagram"));
         }
         return send_file(connection, fullfile, "image/svg+xml");
+    }
+
+    // Check for svg block-diagram requests first
+    if (url.extension() == ".js") {
+        if (gVerbosity >= 2) std::cerr << "Processing Javascript file request" << std::endl;
+        fs::path fullfile = fulldir / target;
+        if (!boost::filesystem::exists(fullfile)) {
+            if (gVerbosity >= 2) std::cerr << "Javascript doesn't exist!" << std::endl;
+        }
+        return send_file(connection, fullfile, "application/javascript");
+    }
+
+    // Check for svg block-diagram requests first
+    if (url.extension() == ".wasm") {
+        if (gVerbosity >= 2) std::cerr << "Processing WebAssembly file request" << std::endl;
+        fs::path fullfile = fulldir / target;
+        if (!boost::filesystem::exists(fullfile)) {
+            if (gVerbosity >= 2) std::cerr << "WebAssembly file doesn't exist!" << std::endl;
+        }
+        return send_file(connection, fullfile, "application/wasm");
     }
 
     // Check if we are doing only a pre-compilation (without actually downloading the compiled file)

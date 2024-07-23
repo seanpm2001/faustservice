@@ -96,3 +96,20 @@ bool matchExtension(const string& url, const std::string& ext)
         return false;
     }
 }
+
+bool matchBeginURL(const string& url, const std::string& pat)
+{
+    vector<string> U = decomposeURL(url);
+    vector<string> P = decomposeURL(pat);
+    if (P.size() <= U.size()) {
+        for (size_t i = 0; i < P.size(); i++) {
+            if ((P[i] != "*") && (P[i] != U[i])) {
+                return false;
+            }
+        }
+        if (gVerbosity >= 2) cout << "PATTERN " << pat << " MATCHES URL " << url << endl;
+        return true;
+    } else {
+        return false;
+    }
+}

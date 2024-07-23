@@ -1,0 +1,17 @@
+################################################################################
+# 
+#		FaustWeb Makefile for WPA applications using TS architecture
+# 
+################################################################################
+
+faustfile ?= $(wildcard *.dsp)
+out ?= './'
+
+index.html : $(faustfile)
+	faust2wasm-ts $(faustfile) $(out) -pwa
+	touch $(out)/faust-ui/Makefile
+	touch $(out)/faustwasm/Makefile
+
+
+src.wasm : $(faustfile)
+	faust -lang wasm -i $(faustfile) -o src.wasm

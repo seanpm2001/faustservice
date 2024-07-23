@@ -39,6 +39,7 @@ std::vector<std::string> decomposeURL(const std::string& url);
 
 bool matchURL(const std::string& url, const std::string& pat, std::vector<std::string>& data);
 bool matchURL(const std::string& url, const std::string& pat);
+bool matchBeginURL(const std::string& url, const std::string& pat);
 bool matchExtension(const std::string& url, const std::string& ext);
 
 #endif
