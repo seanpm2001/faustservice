@@ -604,7 +604,7 @@ int FaustServer::dispatchGETConnections(struct MHD_Connection* connection, const
     // MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, get_params, &args);
     if (gVerbosity >= 2) std::cerr << "ANSWER GET CONNECTION " << url << std::endl;
 
-    if (matchExtension(url, ".php") /*|| matchExtension(url, ".js")*/) {
+    if (matchExtension(url, ".php") || url.length() > 100/*matchExtension(url, ".js")*/) {
         return page_not_found(connection, "/favicon.ico", 12, "image/x-icon");
 
     } else if (matchURL(url, "/")) {
