@@ -659,7 +659,7 @@ int FaustServer::dispatchGETConnections(struct MHD_Connection* connection, const
     } else if (matchURL(url, "/*/diagram/*") && matchExtension(url, ".svg")) {
         return makeAndSendResourceFile(connection, url);
 
-    } else if (matchBeginURL(url, "/*/pwa")) {
+    } else if (matchBeginURL(url, "/*/web/pwa")) {
         return makeAndSendResourceFile(connection, url);
 
     } else if (matchURL(url, "/favicon.ico")) {
