@@ -104,6 +104,7 @@ bool matchBeginURL(const string& url, const std::string& pat)
     if (P.size() <= U.size()) {
         for (size_t i = 0; i < P.size(); i++) {
             if ((P[i] != "*") && (P[i] != U[i])) {
+                if (gVerbosity >= 2) cout << "PATTERN " << pat << " DOES NOT MATCH URL " << url << endl;
                 return false;
             }
         }
