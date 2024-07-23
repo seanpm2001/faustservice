@@ -78,9 +78,9 @@ bool matchURL(const string& url, const std::string& pat)
     bool           r = matchURL(url, pat, ignore);
     if (gVerbosity >= 2) {
         if (r)
-            cout << "MATCH " << pat << " <== " << url << endl;
+            cout << "PATTERN " << pat << " MATCHES URL " << url << endl;
         else
-            cout << "DOES NOT MATCH " << pat << " <== " << url << endl;
+            cout << "PATTERN " << pat << " DOES NOT MATCH URL " << url << endl;
     }
     return r;
 }
