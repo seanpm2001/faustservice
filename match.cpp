@@ -80,7 +80,7 @@ bool matchURL(const string& url, const std::string& pat)
         if (r)
             cout << "MATCH " << pat << " <== " << url << endl;
         else
-            cout << "DONT MATCH " << pat << " <== " << url << endl;
+            cout << "DOES NOT MATCH " << pat << " <== " << url << endl;
     }
     return r;
 }
@@ -110,6 +110,7 @@ bool matchBeginURL(const string& url, const std::string& pat)
         if (gVerbosity >= 2) cout << "PATTERN " << pat << " MATCHES URL " << url << endl;
         return true;
     } else {
+        if (gVerbosity >= 2) cout << "PATTERN " << pat << " DOES NOT MATCH URL " << url << endl;
         return false;
     }
 }
