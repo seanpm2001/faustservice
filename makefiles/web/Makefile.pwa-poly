@@ -1,7 +1,7 @@
 #FaustBinaryTarget: index.html
 ################################################################################
 # 
-#		FaustWeb Makefile for PWA applications using TS architecture
+#		FaustWeb Makefile for PWA polyphonic applications using TS architecture
 # 
 ################################################################################
 
@@ -9,7 +9,7 @@ faustfile ?= $(wildcard *.dsp)
 out ?= './'
 
 index.html : $(faustfile)
-	faust2wasm-ts $(faustfile) $(out) -pwa
+	faust2wasm-ts $(faustfile) $(out) -pwa -poly
 	touch $(out)/faust-ui/Makefile
 	touch $(out)/faustwasm/Makefile
 
