@@ -637,16 +637,16 @@ int FaustServer::dispatchGETConnections(struct MHD_Connection* connection, const
         return send_page(connection, ss.str().c_str(), ss.str().size(), MHD_HTTP_OK, "text/html");
 
         /*
-            } else if (matchURL(url, "/crash1")) {
-                // simulate crash -- to be removed in production
-                exit(-1);
+        } else if (matchURL(url, "/crash1")) {
+            // simulate crash -- to be removed in production
+            exit(-1);
 
-            } else if (matchURL(url, "/crash2")) {
-                // simulate crash -- to be removed in production
-                int* p = 0;
-                *p     = 5 / (*p);
-                return page_not_found(connection, "/crash2", 7, "image/x-icon");
-        */
+        } else if (matchURL(url, "/crash2")) {
+            // simulate crash -- to be removed in production
+            int* p = 0;
+            *p     = 5 / (*p);
+            return page_not_found(connection, "/crash2", 7, "image/x-icon");
+         */
     } else if (matchURL(url, "/*/*/*/installer.sh")) {
         return makeAndSendResourceFile(connection, url);
 
@@ -662,7 +662,7 @@ int FaustServer::dispatchGETConnections(struct MHD_Connection* connection, const
     } else if (matchURL(url, "/*/diagram/*") && matchExtension(url, ".svg")) {
         return makeAndSendResourceFile(connection, url);
 
-    } else if (matchBeginURL(url, "/*/web/pwa/")) {
+    } else if (matchBeginURL(url, "/*/web/pwa/") || matchBeginURL(url, "/*/web/pwa-poly/")) {
         return makeAndSendResourceFile(connection, url);
 
     } else if (matchURL(url, "/favicon.ico")) {
