@@ -709,7 +709,7 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
 {
     vector<string> U        = decomposeURL(raw_url);
     fs::path       url      = fs::path(raw_url);
-    fs::path       fulldir  = this->getDirectory() / url.parent_path();
+    fs::path       fulldir  = getDirectory() / url.parent_path();
     fs::path       target   = url.filename();
     fs::path       makefile = fulldir / "Makefile";
     fs::path       location;
@@ -718,6 +718,9 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
 
     if (gVerbosity >= 2) std::cerr << "\nUSING SESSION " << U[1] << "\n\n";
     fSessionCache.refer(U[1]);
+    
+    if (gVerbosity >= 2) std::cerr << "fulldir : " << fulldir << std::endl;
+    if (gVerbosity >= 2) std::cerr << "makefile  : " << makefile << std::endl;
 
     // Check for svg block-diagram requests first
     if (url.extension() == ".svg") {
@@ -763,8 +766,7 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
         return send_page(connection, invalidinstruction.c_str(), invalidinstruction.size(), MHD_HTTP_BAD_REQUEST,
                          "text/html");
     } else if (!fs::is_regular_file(makefile)) {
-        std::cerr << "Error : No makefile found "
-                  << " in raw_url " << raw_url << std::endl;
+        std::cerr << "Error : no makefile found in raw_url " << raw_url << std::endl;
         return send_page(connection, invalidinstruction.c_str(), invalidinstruction.size(), MHD_HTTP_BAD_REQUEST,
                          "text/html");
     }
@@ -773,8 +775,7 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
     fs::path filename = make(fulldir, target);
 
     if (!fs::is_regular_file(filename)) {
-        std::cerr << "Error : Make Failed "
-                  << " in raw_url " << raw_url << std::endl;
+        std::cerr << "Error : make failed in raw_url " << raw_url << std::endl;
         return send_page(connection, cannotcompile.c_str(), cannotcompile.size(), MHD_HTTP_BAD_REQUEST, "text/html");
     } else {
         if (!precompile) {
@@ -799,7 +800,7 @@ int FaustServer::dispatchPOSTConnections(struct MHD_Connection* connection, cons
         if (gVerbosity >= 2) std::cerr << "PRE POST processing" << std::endl;
         struct connection_info_struct* con_info;
 
-        if (nr_of_uploading_clients >= this->getMaxClients()) {
+        if (nr_of_uploading_clients >= getMaxClients()) {
             return send_page(connection, busypage.c_str(), busypage.size(), MHD_HTTP_SERVICE_UNAVAILABLE, "text/html");
         }
 
@@ -807,8 +808,8 @@ int FaustServer::dispatchPOSTConnections(struct MHD_Connection* connection, cons
         if (NULL == con_info) {
             return MHD_NO;
         }
-        con_info->directory          = this->getDirectory().string();
-        con_info->makefile_directory = this->getMakefileDirectory().string();
+        con_info->directory          = getDirectory().string();
+        con_info->makefile_directory = getMakefileDirectory().string();
 
         con_info->fp = NULL;
         con_info->postprocessor =
@@ -843,7 +844,7 @@ int FaustServer::dispatchPOSTConnections(struct MHD_Connection* connection, cons
             // need to close the file before request_completed
             // so that it can be opened by the methods below
             if (con_info->fp) {
-                if (gVerbosity >= 2) std::cerr << "POST processing, We can close the file !" << std::endl;
+                if (gVerbosity >= 2) std::cerr << "POST processing, we can close the file !" << std::endl;
                 fclose(con_info->fp);
                 con_info->fp = 0;
             }
@@ -855,20 +856,20 @@ int FaustServer::dispatchPOSTConnections(struct MHD_Connection* connection, cons
                 sha1 = generate_sha1(con_info);  // TODO: Duplicated computation of the SHA key
                 if (gVerbosity >= 2)
                     if (gVerbosity >= 1)
-                        std::cerr << "POST processing, We have valid faust code. Its SHA1 key is = " << sha1
+                        std::cerr << "POST processing, we have valid faust code. Its SHA1 key is = " << sha1
                                   << std::endl;
                 if (matchURL(url, "/compile/*/*/*", segments)) {
                     string newurl("/");
                     newurl += sha1 + "/" + segments[2] + "/" + segments[3] + "/" + segments[4];
                     if (gVerbosity >= 2)
-                        std::cerr << "DIRECT COMPILATION: We are trying a direct compilation at " << newurl << endl;
+                        std::cerr << "DIRECT COMPILATION: we are trying a direct compilation at " << newurl << endl;
                     return makeAndSendResourceFile(connection, newurl.c_str());
                 } else {
                     return send_page(connection, con_info->answerstring.c_str(), con_info->answerstring.size(),
                                      con_info->answercode, "text/html");
                 }
             } else {
-                std::cerr << "POST processing, We have an INVALID faust code" << std::endl;
+                std::cerr << "POST processing, we have an INVALID faust code" << std::endl;
                 std::string errormessage = "Invalid Faust Code";
                 return send_page(connection, errormessage.c_str(), errormessage.size(), con_info->answercode,
                                  "text/html");
