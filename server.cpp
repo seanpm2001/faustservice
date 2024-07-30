@@ -723,7 +723,7 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
     fSessionCache.refer(U[1]);
     
     if (gVerbosity >= 2) std::cerr << "fulldir : " << fulldir << std::endl;
-    if (gVerbosity >= 2) std::cerr << "makefile  : " << makefile << std::endl;
+    if (gVerbosity >= 2) std::cerr << "makefile : " << makefile << std::endl;
 
     // Check for svg block-diagram requests first
     if (url.extension() == ".svg") {
@@ -735,25 +735,29 @@ int FaustServer::makeAndSendResourceFile(struct MHD_Connection* connection, cons
         }
         return send_file(connection, fullfile, "image/svg+xml");
     }
+    
+    // Map of file extension and corresponding mimetypes
+    static std::map<std::string, std::string> mimeTypes;
+    
+    // Insert key-value pairs
+    mimeTypes[".js"] = "application/javascript";
+    mimeTypes[".css"] = "text/css";
+    mimeTypes[".wasm"] = "application/wasm";
+    mimeTypes[".json"] = "application/json";
+    mimeTypes[".png"] = "image/png";
+    mimeTypes[".flac"] = "audio/flac";
+    mimeTypes[".wav"] = "audio/wav";
+    
+    string ext = url.extension().string();
 
-    // Check for svg block-diagram requests first
-    if (url.extension() == ".js") {
-        if (gVerbosity >= 2) std::cerr << "Processing Javascript file request" << std::endl;
+    // Check for files in mimeTypes map
+    if (mimeTypes.count(ext) > 0) {
+        if (gVerbosity >= 2) std::cerr << "Processing " << mimeTypes[ext] << " request" << std::endl;
         fs::path fullfile = fulldir / target;
         if (!boost::filesystem::exists(fullfile)) {
-            if (gVerbosity >= 2) std::cerr << "Javascript doesn't exist!" << std::endl;
+            if (gVerbosity >= 2) std::cerr << mimeTypes[ext] << " doesn't exist!" << std::endl;
         }
-        return send_file(connection, fullfile, "application/javascript");
-    }
-
-    // Check for svg block-diagram requests first
-    if (url.extension() == ".wasm") {
-        if (gVerbosity >= 2) std::cerr << "Processing WebAssembly file request" << std::endl;
-        fs::path fullfile = fulldir / target;
-        if (!boost::filesystem::exists(fullfile)) {
-            if (gVerbosity >= 2) std::cerr << "WebAssembly file doesn't exist!" << std::endl;
-        }
-        return send_file(connection, fullfile, "application/wasm");
+        return send_file(connection, fullfile, mimeTypes[ext].c_str());
     }
 
     // Check if we are doing only a pre-compilation (without actually downloading the compiled file)
