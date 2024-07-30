@@ -94,8 +94,8 @@ static string generate_sha1(connection_info_struct* con_info)
         const char* H  = "0123456789ABCDEF";
         char        c1 = H[(obuf[i] >> 4)];
         char        c2 = H[(obuf[i] & 15)];
-        sha1key += c1;
-        sha1key += c2;
+        sha1key += tolower(c1);
+        sha1key += tolower(c2);
     }
     free(content);
 
@@ -466,7 +466,6 @@ unsigned int FaustServer::nr_of_uploading_clients = 0;
 // Define here the various targets accepted by faustweb makefiles
 static bool isValidTarget(const fs::path& target, const char*& mimetype)
 {
-    return true;  // TODO
     if (target == "binary.zip") {
         mimetype = "application/zip";
         return true;
@@ -490,7 +489,11 @@ static bool isValidTarget(const fs::path& target, const char*& mimetype)
     } else if (target == "installer.sh") {
         mimetype = "application/x-shellscript";
         return true;
-
+        
+    } else if (target == "index.html") {
+        mimetype = "text/html";
+        return true;
+ 
     } else {
         return false;
     }
