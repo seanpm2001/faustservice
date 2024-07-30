@@ -6,7 +6,7 @@
 ################################################################################
 
 faustfile ?= $(wildcard *.dsp)
-out ?= './'
+out ?= '.'
 
 index.html : $(faustfile)
 	faust2wasm-ts $(faustfile) $(out) -pwa -poly
